@@ -1,0 +1,6 @@
+# What is DownloadFolderManager
+
+DownloadFolderManager is manager service for management "download" folder. You can set target forlder for copy from your download folder (for example, copy all .avi file to you movie folder) or you can set automatic archiving.
+
+#How to get it
+[Download the latest release](https://github.com/devdeny-cz/Worker.DownloadFolderManager/releases) from GitHub.
