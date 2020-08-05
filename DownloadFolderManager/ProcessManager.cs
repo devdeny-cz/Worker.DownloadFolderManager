@@ -13,6 +13,7 @@ namespace DownloadFolderManager
     public class ProcessManager
     {
         private const string TEMP_FOLDER = "temp";
+        private const string START_SLASH_PATTERN = @"(^\\[^\\])|(^\/[^\/])";
         private readonly string[] zipExtensions = new string[] { ".zip", ".zipx", ".rar", ".rev", "r01", ".r00", ".7z", ".xz", ".tar", ".wim", ".bzip2" };
         private List<ProcessRule> _migrateRules;
         private List<ZipRule> _zipRules;
@@ -31,8 +32,6 @@ namespace DownloadFolderManager
         {
             _migrateRules = new List<ProcessRule>();
             _zipRules = new List<ZipRule>();
-            //_logger = new Logger<ProcessManager>();
-            //logger = _logger;
         }
 
         internal void TryReadRules(string path)
@@ -187,7 +186,7 @@ namespace DownloadFolderManager
             {
                 // apply rule
                 string targetDirectory = ruleWithMaxPriority.TargetPath;
-                if (Regex.IsMatch(targetDirectory, @"(^\\[^\\])|(^\/[^\/])"))
+                if (Regex.IsMatch(targetDirectory, START_SLASH_PATTERN))
                 {
                     targetDirectory = targetDirectory.Substring(1);
                 }
@@ -201,6 +200,11 @@ namespace DownloadFolderManager
                 }
                 // move file
                 var outFilePath = Path.Combine(targetDirectory, Path.GetFileName(inputFilePath));
+                int count = 1;
+                while (File.Exists(outFilePath))
+                {
+                    outFilePath = Path.Combine(targetDirectory, $"{Path.GetFileNameWithoutExtension(inputFilePath)}({count++}){Path.GetExtension(inputFilePath)}");
+                }
                 try
                 {
                     _logger.LogInformation($"File will move from {inputFilePath} to {outFilePath}");
